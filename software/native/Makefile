@@ -2,8 +2,8 @@ CC=gcc
 INCLUDE=-I. -I../../
 CFLAGS=$(INCLUDE)
 
-main.o: # TODO: dependancies
-	echo "Unimplemented rule"; exit 1
+main.o: ../main.c ../../address_map.h hal.h
+	$(CC) -o main.o -c ../main.c $(CFLAGS)
 
 .PHONY: clean realclean
 clean:

@@ -14,19 +14,19 @@ extern "C" int main();
 extern "C" void interrupt_handler();
 
 extern "C" void hal_write32(uint32_t addr, uint32_t data) {
-	abort(); // TODO
+	NativeWrapper::hal_write32(addr, data);
 }
 
 extern "C" unsigned int hal_read32(uint32_t addr) {
-	abort(); // TODO
+	return NativeWrapper::hal_read32(addr);
 }
 
 extern "C" void hal_cpu_relax() {
-	abort(); // TODO
+	NativeWrapper::hal_cpu_relax();
 }
 
 extern "C" void hal_wait_for_irq() {
-	abort(); // TODO
+	NativeWrapper::hal_wait_for_irq();
 }
 
 /* To keep it simple, the soft wrapper is a singleton, we can
@@ -65,7 +65,7 @@ void NativeWrapper::hal_wait_for_irq()
 {
 	abort(); // TODO
 }
-
+////////////////////////////
 void NativeWrapper::compute()
 {
 	abort(); // TODO
