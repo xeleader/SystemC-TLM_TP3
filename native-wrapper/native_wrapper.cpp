@@ -53,18 +53,19 @@ void NativeWrapper::hal_write32(unsigned int addr, unsigned int data)
 unsigned int NativeWrapper::hal_read32(unsigned int addr)
 {
 	unsigned int data;
-	return socket.read(addr, data);
+	socket.read(addr, data);
 	return data;
 }
 
 void NativeWrapper::hal_cpu_relax()
 {
-	wait(1, SC_MS);
+	wait(1, sc_core::SC_MS);
 }
 
 void NativeWrapper::hal_wait_for_irq()
 {
-	abort(); // TODO
+	if (!interrupt) wait(interrupt_event);
+	interrupt = false;
 }
 ////////////////////////////
 void NativeWrapper::compute()
@@ -74,5 +75,7 @@ void NativeWrapper::compute()
 
 void NativeWrapper::interrupt_handler_internal()
 {
-	abort(); // TODO
+	interrupt = true;
+	interrupt_event.notify();
+	//int_handler(); /* surchargeable */
 }
