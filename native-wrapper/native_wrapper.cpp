@@ -14,19 +14,19 @@ extern "C" int main();
 extern "C" void interrupt_handler();
 
 extern "C" void hal_write32(uint32_t addr, uint32_t data) {
-	NativeWrapper::hal_write32(addr, data);
+	NativeWrapper::get_instance()->hal_write32(addr, data);
 }
 
 extern "C" unsigned int hal_read32(uint32_t addr) {
-	return NativeWrapper::hal_read32(addr);
+	return NativeWrapper::get_instance()->hal_read32(addr);
 }
 
 extern "C" void hal_cpu_relax() {
-	NativeWrapper::hal_cpu_relax();
+	NativeWrapper::get_instance()->hal_cpu_relax();
 }
 
 extern "C" void hal_wait_for_irq() {
-	NativeWrapper::hal_wait_for_irq();
+	NativeWrapper::get_instance()->hal_wait_for_irq();
 }
 
 /* To keep it simple, the soft wrapper is a singleton, we can
@@ -43,22 +43,23 @@ NativeWrapper * NativeWrapper::get_instance() {
 NativeWrapper::NativeWrapper(sc_core::sc_module_name name) : sc_module(name),
 							     irq("irq")
 {
-	abort(); // TODO
 }
 
 void NativeWrapper::hal_write32(unsigned int addr, unsigned int data)
 {
-	abort(); // TODO
+	socket.write(addr, data);
 }
 
 unsigned int NativeWrapper::hal_read32(unsigned int addr)
 {
-	abort(); // TODO
+	unsigned int data;
+	return socket.read(addr, data);
+	return data;
 }
 
 void NativeWrapper::hal_cpu_relax()
 {
-	abort(); // TODO
+	wait(1, SC_MS);
 }
 
 void NativeWrapper::hal_wait_for_irq()
