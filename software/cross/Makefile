@@ -12,6 +12,7 @@ HOST_OBJDUMP = objdump
 HOST_READELF = readelf
 
 INCLUDE = -I. -I../..
+CFLAGS=$(INCLUDE)
 
 OBJS = main.o boot.o it.o
 EXEC = a.out
@@ -25,16 +26,14 @@ sections.txt: $(EXEC)
 	$(TARGET_READELF) -S $< > $@
 
 
-$(EXEC): # TODO: dependencies
-	echo "Rule for linking not implemented."; exit 1
-# TODO: use $(TARGET_LD), and use the -T option to point to linker script ldscript
+$(EXEC): ldscript main.o boot.o
+	$(TARGET_LD) -T $^
 
-main.o: # TODO: dependencies
-	echo "Rule for compilation not implemented"; exit 1
-# TODO: compile with target C compiler
+main.o: ../main.c ../../address_map.h hal.h
+	$(TARGET_CC) -o main.o -c ../main.c $(CFLAGS)
 
 %.o: %.s
-	echo "Rule for assembly not implemented"; exit 1
+	$(TARGET_CC) -c $< -o $@
 
 .PHONY: clean realclean
 clean:

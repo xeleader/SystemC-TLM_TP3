@@ -18,7 +18,7 @@ _exception_handler: /* Self-loop (nothing better to do) */
 
         .org 0x10
 _interrupt_handler:
-        bri __interrupt_handler
+        bri _interrupt_handler
 
         .org 0x18
 _break_handler: /* Self-loop (nothing better to do) */

@@ -14,7 +14,7 @@ include $(ROOT)/Makefile.common
 
 EXTRALDLIBS += -L../hardware -lhardware -L../elf-loader -lloader
 CXXEXTRAFLAGS = -I../hardware
-CEXTRAFLAGS = -I. 
+CEXTRAFLAGS = -I.
 
 $(TARGET): $(OBJS) hardware lib-loader
 	$(LD) $(ESOFT_OBJS) $(OBJS) -o $@ $(LDFLAGS) $(EXTRALDLIBS) $(LDLIBS)
