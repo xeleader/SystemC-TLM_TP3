@@ -19,8 +19,8 @@ Disassembly of section .all:
 00000020 <_hw_exception_handler>:
       20:	b8000000 	bri	0	// 20 <_hw_exception_handler>
 	...
-      50:	b000ffff 	imm	-1
-      54:	3020fffc 	addik	r1, r0, -4
+      50:	b0000001 	imm	1
+      54:	3020fffc 	addik	r1, r0, -4	// 1fffc <_stack_top>
       58:	a0600002 	ori	r3, r0, 2
       5c:	9403c001 	mts	rmsr, r3
       60:	b0000000 	imm	0
