@@ -24,6 +24,7 @@ struct MBWrapper : sc_core::sc_module {
 
 private:
 	typedef soclib::common::MicroBlazeIss iss_t;
+	void irq_handler(void);
 	void exec_data_request(enum iss_t::DataAccessType mem_type,
 	                       uint32_t mem_addr, uint32_t mem_wdata);
 
