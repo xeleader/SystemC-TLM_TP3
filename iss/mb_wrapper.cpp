@@ -24,11 +24,17 @@ MBWrapper::MBWrapper(sc_core::sc_module_name name)
 	m_iss.reset();
 	m_iss.setIrq(false);
 	SC_THREAD(run_iss);
+  SC_METHOD(irq_handler);
+  sensitive << irq;
         /* The method that is needed to forward the interrupts from the SystemC
          * environment to the ISS need to be declared here */
 }
 
-/* IRQ forwarding method to be defined here */
+void MBWrapper::irq_handler(void) {
+  if(irq.posedge()){
+    m_iss.setIrq(true);
+  }
+}
 
 void MBWrapper::exec_data_request(enum iss_t::DataAccessType mem_type,
                                   uint32_t mem_addr, uint32_t mem_wdata) {
@@ -46,10 +52,19 @@ void MBWrapper::exec_data_request(enum iss_t::DataAccessType mem_type,
 #endif
 		m_iss.setDataResponse(0, localbuf);
 	} break;
-	case iss_t::READ_BYTE:
+	case iss_t::READ_BYTE: {
+      socket.read(mem_addr >> (mem_addr%4 * 8) , localbuf);
+      localbuf = uint32_machine_to_be(localbuf);
+      localbuf = localbuf & 0xF;
+#ifdef DEBUG
+ std::cout << hex << "read    " << setw(10) << localbuf
+           << " at address " << mem_addr << std::endl;
+#endif
+    m_iss.setDataResponse(0, localbuf);
+  }
 	case iss_t::WRITE_HALF:
 	case iss_t::WRITE_BYTE:
-	case iss_t::READ_HALF:
+  case iss_t::READ_HALF:
 		// Not needed for our platform.
 		std::cerr << "Operation " << mem_type << " unsupported for "
 		          << std::showbase << std::hex << mem_addr << std::endl;
@@ -108,7 +123,14 @@ void MBWrapper::run_iss(void) {
 				                  mem_wdata);
 			}
 			m_iss.step();
-                        /* IRQ handling to be done */
+
+      if(irq & inst_count > 5) {
+        m_iss.setIrq(false);
+        inst_count = 0;
+      } else {
+        inst_count ++;
+      }
+
 		}
 
 		wait(PERIOD);

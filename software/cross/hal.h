@@ -16,23 +16,35 @@
 #include <stdint.h>
 
 /* Dummy implementation of abort(): invalid instruction */
-#define abort()	printf("abort() function called\r\n");  \
+#define abort()	printf("abort() function called\r\n")
 	/* do {
 	 _hw_exception_handler();
 	} while (0) */
 
-/* TODO: implement HAL primitives for cross-compilation */
-#define hal_read32(a) 0 //*(volatile data_t *)a;/
-#define hal_write32(a, d) abort() //*(volatile data_t *)a = d;
-#define hal_wait_for_irq() abort() //abort()
-#define hal_cpu_relax()    abort() //abort()
+#define hal_read32(a) (*(uint32_t *)(a))
+#define hal_write32(a, d) (*(uint32_t *)(a)) = d
+#define hal_wait_for_irq() abort()
+#define hal_cpu_relax()	abort()
+
+/*
+uint32_t hal_read32(a) {
+	return (*(uint32_t *)(a	));
+}
+
+void hal_write32(a,d) {
+	(*(uint32_t *)a) = d; //au lieu de 	(*(uint32_t *))a = d;
+}
+*/
 
 void microblaze_enable_interrupts(void) {
 	__asm("ori     r3, r0, 2\n"
 	      "mts     rmsr, r3");
 }
 
-/* TODO: printf is disabled, for now ... */
-#define printf(...) do {} while(0)
+#define printf(str)	do { \
+				char *addr_str = &str; \
+				for(; *addr_str == '\0'; addr_str++) { \
+					hal_write32(UART_BASEADDR+UART_FIFO_WRITE, *addr_str);} \
+				} while(0)\
 
 #endif /* HAL_H */
